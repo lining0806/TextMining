@@ -1,4 +1,4 @@
-# 文本挖掘综合系统 Text Mining System
+# 文本挖掘系统 Text Mining System
 
 #### Author: LiNing 
 #### Email: lining0806@gmail.com
