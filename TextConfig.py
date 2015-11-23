@@ -30,7 +30,7 @@ config_file = os.path.join(Config_Dir, "config.ini")
 assert(os.path.exists(config_file))
 
 Datas_Dir = os.path.join(Config_Dir, "datas")
-all_sorted_words_list_file = os.path.join(Datas_Dir, "all_sorted_words_list")
+all_words_dict_file = os.path.join(Datas_Dir, "all_words_dict")
 train_datas_file = os.path.join(Datas_Dir, "train_datas")
 Fea_Dict_Dir = os.path.join(Datas_Dir, "fea_dict")
 Model_Dir = os.path.join(Datas_Dir, "model")
@@ -77,7 +77,6 @@ smtp_server = conf.get("email", "smtp_server")
 from_addr = conf.get("email", "from_addr")
 passwd = conf.get("email", "passwd")
 to_addr = conf.get("email", "to_addr")
-from_addr = conf.get("email", "from_addr")
 sendmail_flag = conf.getboolean("email", "sendmail_flag")
 
 test_speedup = conf.getboolean("other", "test_speedup")
@@ -87,7 +86,7 @@ print host, port, name, password, database, collection, \
     limit_number
 print lag, fea_dict_size
 to_addr = re.split(r',', re.search(r'\[(.*?)\]', to_addr).group(1).replace(' ', '').replace('"', ''))
-print smtp_server, from_addr, passwd, to_addr, from_addr, sendmail_flag
+print smtp_server, from_addr, passwd, to_addr, sendmail_flag
 print test_speedup
 
 stopwords_set = MakeWordsSet(stopwords_file)
