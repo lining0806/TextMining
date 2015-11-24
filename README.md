@@ -1,11 +1,6 @@
 # 文本挖掘系统 Text Mining System
 
-#### Author: LiNing 
-#### Email: lining0806@gmail.com
-#### Blog: [宁哥的小站](http://www.lining0806.com/)
-
 ***
-
 
 ## 系统说明
 
