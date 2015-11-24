@@ -2,7 +2,9 @@
 from __future__ import division
 __author__ = 'LiNing'
 
+
 import re
+import math
 import nltk
 import jieba
 import jieba.analyse
@@ -43,26 +45,61 @@ def TextSeg(text, lag):
         word_list = []
     return word_list
 
+def WordLen(lag):
+    if lag == "eng": # 英文情况
+        return 2, 15
+    elif lag == "chs": # 中文情况
+        return 1, 5
+    else:
+        return 1, 15
+
+def MakeFeatureWordsDict(all_words_tf_dict, all_words_df_dict, stopwords_set, writewords_set, lag, fea_dict_size):
+    ## --------------------------------------------------------------------------------
+    words_feature = list(writewords_set)
+    n = len(words_feature)
+    assert(n<=fea_dict_size)
+    filterword_set = stopwords_set | writewords_set
+    wordlen_min, wordlen_max = WordLen(lag)
+    all_sorted_words_tuple_list = sorted(all_words_tf_dict.items(), key=lambda f:f[1], reverse=True)
+    # all_sorted_words_tuple_list = sorted(all_words_df_dict.items(), key=lambda f:f[1], reverse=True)
+    all_sorted_words_list = list(zip(*all_sorted_words_tuple_list)[0])
+    # all_sorted_words_list = []
+    # for sorted_word, times in all_sorted_words_tuple_list:
+    #     all_sorted_words_list.append(sorted_word)
+    ## --------------------------------------------------------------------------------
+    for sorted_word in all_sorted_words_list:
+        if n == fea_dict_size:
+            break
+        # if not sorted_word.isdigit(): # 不是数字
+        if re.match(ur'^[\u4e00-\u9fa5]+$|^[a-z A-Z -]+$', sorted_word) and sorted_word not in filterword_set: # 中英文
+            if wordlen_min<len(sorted_word)<wordlen_max: # unicode长度
+                words_feature.append(sorted_word)
+                n += 1
+    print "all_words length in words_feature: ", len(words_feature)
+    # for word_feature in words_feature:
+    #     print word_feature
+    return words_feature
+
 class TextExtractTags(object):
     # 申明相关的属性
-    def __init__(self, text, notstopwords_set, topK=10):
+    def __init__(self, text, stopwords_set, writewords_set, topK=10):
         self.text = text
-        self.notstopwords_set = notstopwords_set
+        self.stopwords_set = stopwords_set
+        self.writewords_set = writewords_set
         self.topK = topK
 
     def SelectK(self, words_dict):
         ## --------------------------------------------------------------------------------
-        # key函数利用频度进行降序排序
         words_tuple_list = sorted(words_dict.items(), key=lambda f:f[1], reverse=True)
         sorted_words = list(zip(*words_tuple_list)[0])
         # sorted_words = []
         # for key, value in words_tuple_list:
         #     sorted_words.append(key)
         #### 直接截断
-        # new_sorted_words = sorted_words
-        #### 参考非停用词进行调序
-        new_sorted_words = filter(lambda f:f in self.notstopwords_set, sorted_words)
-        new_sorted_words.extend(filter(lambda f:f not in self.notstopwords_set, sorted_words))
+        # new_sorted_words = filter(lambda f:f not in self.stopwords_set, sorted_words)
+        ####
+        new_sorted_words = filter(lambda f:f in self.writewords_set, sorted_words)
+        new_sorted_words.extend(filter(lambda f:f not in (self.stopwords_set | self.writewords_set), sorted_words))
         ## --------------------------------------------------------------------------------
         tags = new_sorted_words[:self.topK]
         return tags
@@ -83,12 +120,7 @@ class TextExtractTags(object):
 
     def Tags_Tf(self, lag):
         ## --------------------------------------------------------------------------------
-        if lag == "eng": # 英文情况
-            wordlen_min, wordlen_max = 2, 15
-        elif lag == "chs": # 中文情况
-            wordlen_min, wordlen_max = 1, 5
-        else:
-            wordlen_min, wordlen_max = 1, 15
+        wordlen_min, wordlen_max = WordLen(lag)
         tf_dict = {}
         for word in self.text:
             if tf_dict.has_key(word):
@@ -101,14 +133,9 @@ class TextExtractTags(object):
             tf_dict[key] /= length
         return self.SelectK(tf_dict)
 
-    def Tags_TfIDf(self, all_words_df_dict, lag):
+    def Tags_TfIDf(self, all_words_df_dict, train_datas_count, lag):
         ## --------------------------------------------------------------------------------
-        if lag == "eng": # 英文情况
-            wordlen_min, wordlen_max = 2, 15
-        elif lag == "chs": # 中文情况
-            wordlen_min, wordlen_max = 1, 5
-        else:
-            wordlen_min, wordlen_max = 1, 15
+        wordlen_min, wordlen_max = WordLen(lag)
         tf_idf_dict = {}
         for word in self.text:
             if tf_idf_dict.has_key(word):
@@ -121,14 +148,13 @@ class TextExtractTags(object):
             if key in all_words_df_dict:
                 tf_idf_dict[key] = tf_idf_dict[key]/length*all_words_df_dict[key]
             else:
-                self.notstopwords_set.add(key)
+                tf_idf_dict[key] = tf_idf_dict[key]/length*math.log(train_datas_count)
         return self.SelectK(tf_idf_dict)
 
 class TextFeature(object):
     # 申明相关的属性
-    def __init__(self, words_feature, all_words_df_dict, text):
+    def __init__(self, words_feature, text):
         self.words_feature = words_feature
-        self.all_words_df_dict = all_words_df_dict
         self.text = text
 
     def TextBool(self):
@@ -150,20 +176,20 @@ class TextFeature(object):
             tf_features.append(tf)
         return tf_features
 
-    def TextIDf(self):
+    def TextIDf(self, all_words_df_dict):
         idf_features = []
         for word_feature in self.words_feature:
-            idf = self.all_words_df_dict[word_feature]
+            idf = all_words_df_dict[word_feature]
             idf_features.append(idf)
         return idf_features
 
-    def TextTfIDf(self):
+    def TextTfIDf(self, all_words_df_dict):
         tf_idf_features = []
         length = len(self.text)
         for word_feature in self.words_feature:
             word_count = self.text.count(word_feature)
             tf = word_count/length
-            idf = self.all_words_df_dict[word_feature]
+            idf = all_words_df_dict[word_feature]
             tf_idf = tf*idf
             tf_idf_features.append(tf_idf)
         return tf_idf_features
@@ -248,9 +274,4 @@ class ClassifierTrain(object):
         clf.fit(self.train_features, self.train_class)
         best_clf = clf
         return best_clf
-
-def ClassifierTest(best_clf, test_features):
-    test_class = best_clf.predict(test_features)
-    return test_class
-
 

@@ -30,7 +30,9 @@ from SendMail import *
 def MakeTextMining(*para):
     posts, \
     time_col, content_col, source_col, t_status_col, keyword_col, country_col, imp_col, limit_number, \
-    lag, stopwords_set, notstopwords_set, words_feature, all_words_df_dict, train_datas, test_speedup = para
+    lag, stopwords_set, blackwords_set, writewords_set, \
+    all_words_tf_dict, all_words_df_dict, train_datas, test_speedup = para
+    train_datas_count = len(train_datas)
     ## --------------------------------------------------------------------------------
     '''
     id_dict = {
@@ -49,15 +51,22 @@ def MakeTextMining(*para):
         "NotPass":{}
     }
     ## --------------------------------------------------------------------------------
-    ## 生成最优分类器
-    if test_speedup and os.path.exists(best_clf_file):
+    ## 生成分类器模型
+    if test_speedup and os.path.exists(fea_dict_file) and os.path.exists(best_clf_file):
+        words_feature = []
+        with open(fea_dict_file, 'r') as fp:
+            for line in fp.readlines():
+                word_feature = line.strip().decode("utf-8")
+                words_feature.append(word_feature)
         with open(best_clf_file, "rb") as fp_pickle:
             best_clf = pickle.load(fp_pickle)
     else:
+        ## --------------------------------------------------------------------------------
+        words_feature = MakeFeatureWordsDict(all_words_tf_dict, all_words_df_dict, stopwords_set, writewords_set, lag, fea_dict_size)
         train_features = []
         train_class = []
         for train_data in train_datas:
-            TextFeatureClass = TextFeature(words_feature, all_words_df_dict, train_data[0])
+            TextFeatureClass = TextFeature(words_feature, train_data[0])
             train_features.append(TextFeatureClass.TextBool()) #### 可以调整特征抽取，训练集与测试集保持一致
             train_class.append(int(train_data[1])) # str转为int
         train_features = np.array(train_features)
@@ -67,8 +76,12 @@ def MakeTextMining(*para):
         best_clf = ClassifierTrainClass.LR() #### 可以调整分类器训练
         end_time_train = datetime.datetime.now()
         print "best_clf training last time:", end_time_train-start_time_train
-        if not os.path.exists(Model_Dir):
-            os.makedirs(Model_Dir)
+        if not os.path.exists(Classifier_Dir):
+            os.makedirs(Classifier_Dir)
+        with open(fea_dict_file, 'w') as fp:
+            for word_feature in words_feature:
+                fp.writelines(word_feature.encode("utf-8")) # 将unicode转换为utf-8
+                fp.writelines("\n")
         with open(best_clf_file, "wb") as fp_pickle:
             pickle.dump(best_clf, fp_pickle)
 
@@ -85,30 +98,31 @@ def MakeTextMining(*para):
         ## --------------------------------------------------------------------------------
         # print post
         if post[content_col] is not None:
-            print post[content_col]
-            ## --------------------------------------------------------------------------------
+            # print post[content_col]
             textseg_list = TextSeg(post[content_col], lag)
             textseg_set = set(textseg_list)
-            if stopwords_set & textseg_set or len(textseg_set)<=3 or len(textseg_list)<=5: #### 文本过滤
-                print '{"_id":ObjectId("%s")} In Stopwords or Too Short' % post["_id"]
+            ## --------------------------------------------------------------------------------
+            if blackwords_set & textseg_set or len(textseg_set)<=3 or len(textseg_list)<=5:
+                #### 文本过滤
+                print '{"_id":ObjectId("%s")} In Blackwords or Too Short' % post["_id"]
                 id_dict["NotPass"][post["_id"]] = post[content_col]
             else:
                 ## --------------------------------------------------------------------------------
                 #### 文本关键词提取
-                TextExtractTagsClass = TextExtractTags(textseg_list, notstopwords_set, topK=3)
+                TextExtractTagsClass = TextExtractTags(textseg_list, stopwords_set, writewords_set, topK=3)
                 # tags = TextExtractTagsClass.Tags_Words_Feature(words_feature)
                 # tags = TextExtractTagsClass.Tags_Tf(lag)
-                tags = TextExtractTagsClass.Tags_TfIDf(all_words_df_dict, lag)
+                tags = TextExtractTagsClass.Tags_TfIDf(all_words_df_dict, train_datas_count, lag)
                 print '{"_id":ObjectId("%s")} ' % post["_id"],
                 for tag in tags:
                     print tag,
                 print ""
                 ## --------------------------------------------------------------------------------
                 #### 文本分类
-                TextFeatureClass = TextFeature(words_feature, all_words_df_dict, textseg_list)
+                TextFeatureClass = TextFeature(words_feature, textseg_list)
                 test_features = TextFeatureClass.TextBool() #### 可以调整特征抽取，训练集与测试集保持一致
                 test_features = np.array(test_features)
-                test_class = ClassifierTest(best_clf, test_features)
+                test_class = best_clf.predict(test_features)
                 print '{"_id":ObjectId("%s")} ' % post["_id"], Number_Country_Map[str(test_class[0])] # int转为str
                 ## --------------------------------------------------------------------------------
                 #### 文本推荐
@@ -116,7 +130,7 @@ def MakeTextMining(*para):
                 if datetime.time(0, 0, 0)<post[time_col].time()<datetime.time(6, 0, 0):
                     level = "2"
                     digits = [word for word in textseg_list if word.isdigit()]
-                    if len(notstopwords_set & textseg_set)>3 and len(digits)>3:
+                    if len(digits)>=3 and len(textseg_set)>=10 and len(textseg_list)>=20:
                         level = "3"
                 print '{"_id":ObjectId("%s")} ' % post["_id"], level
                 ## --------------------------------------------------------------------------------
@@ -133,7 +147,9 @@ def MakeTextMining(*para):
 def MakeTextMining_ClassifyTest(*para):
     posts, \
     time_col, content_col, source_col, t_status_col, keyword_col, country_col, imp_col, limit_number, \
-    lag, stopwords_set, notstopwords_set, words_feature, all_words_df_dict, train_datas, test_speedup = para
+    lag, stopwords_set, blackwords_set, writewords_set, \
+    all_words_tf_dict, all_words_df_dict, train_datas, test_speedup = para
+    train_datas_count = len(train_datas)
     ## --------------------------------------------------------------------------------
     '''
     id_dict = {
@@ -152,15 +168,22 @@ def MakeTextMining_ClassifyTest(*para):
         "NotPass":{}
     }
     ## --------------------------------------------------------------------------------
-    ## 生成最优分类器
-    if test_speedup and os.path.exists(best_clf_file):
+    ## 生成分类器模型
+    if test_speedup and os.path.exists(fea_dict_file) and os.path.exists(best_clf_file):
+        words_feature = []
+        with open(fea_dict_file, 'r') as fp:
+            for line in fp.readlines():
+                word_feature = line.strip().decode("utf-8")
+                words_feature.append(word_feature)
         with open(best_clf_file, "rb") as fp_pickle:
             best_clf = pickle.load(fp_pickle)
     else:
+        ## --------------------------------------------------------------------------------
+        words_feature = MakeFeatureWordsDict(all_words_tf_dict, all_words_df_dict, stopwords_set, writewords_set, lag, fea_dict_size)
         train_features = []
         train_class = []
         for train_data in train_datas:
-            TextFeatureClass = TextFeature(words_feature, all_words_df_dict, train_data[0])
+            TextFeatureClass = TextFeature(words_feature, train_data[0])
             train_features.append(TextFeatureClass.TextBool()) #### 可以调整特征抽取，训练集与测试集保持一致
             train_class.append(int(train_data[1])) # str转为int
         train_features = np.array(train_features)
@@ -170,8 +193,12 @@ def MakeTextMining_ClassifyTest(*para):
         best_clf = ClassifierTrainClass.LR() #### 可以调整分类器训练
         end_time_train = datetime.datetime.now()
         print "best_clf training last time:", end_time_train-start_time_train
-        if not os.path.exists(Model_Dir):
-            os.makedirs(Model_Dir)
+        if not os.path.exists(Classifier_Dir):
+            os.makedirs(Classifier_Dir)
+        with open(fea_dict_file, 'w') as fp:
+            for word_feature in words_feature:
+                fp.writelines(word_feature.encode("utf-8")) # 将unicode转换为utf-8
+                fp.writelines("\n")
         with open(best_clf_file, "wb") as fp_pickle:
             pickle.dump(best_clf, fp_pickle)
 
@@ -191,20 +218,21 @@ def MakeTextMining_ClassifyTest(*para):
         # print post
         if post[content_col] is not None:
             # print post[content_col]
-            count += 1
-            ## --------------------------------------------------------------------------------
             textseg_list = TextSeg(post[content_col], lag)
             textseg_set = set(textseg_list)
-            if stopwords_set & textseg_set or len(textseg_set)<=3 or len(textseg_list)<=5: #### 文本过滤
-                print '{"_id":ObjectId("%s")} In Stopwords or Too Short' % post["_id"]
+            count += 1
+            ## --------------------------------------------------------------------------------
+            if blackwords_set & textseg_set or len(textseg_set)<=3 or len(textseg_list)<=5:
+                #### 文本过滤
+                print '{"_id":ObjectId("%s")} In Blackwords or Too Short' % post["_id"]
                 id_dict["NotPass"][post["_id"]] = post[content_col]
             else:
                 ## --------------------------------------------------------------------------------
                 #### 文本分类
-                TextFeatureClass = TextFeature(words_feature, all_words_df_dict, textseg_list)
+                TextFeatureClass = TextFeature(words_feature, textseg_list)
                 test_features = TextFeatureClass.TextBool() #### 可以调整特征抽取，训练集与测试集保持一致
                 test_features = np.array(test_features)
-                test_class = ClassifierTest(best_clf, test_features)
+                test_class = best_clf.predict(test_features)
                 if Number_Country_Map[str(test_class[0])] == post[country_col]:
                     correct_count += 1
                 print '{"_id":ObjectId("%s")} ' % post["_id"], Number_Country_Map[str(test_class[0])] # int转为str
@@ -216,7 +244,4 @@ def MakeTextMining_ClassifyTest(*para):
     if count>0:
         print "accuracy of classification: %.2f%%" % (correct_count/count*100)
     ## --------------------------------------------------------------------------------
-    len_pass, len_notpass = len(id_dict["Pass"]), len(id_dict["NotPass"])
-    if len_pass+len_notpass>0:
-        print "Pass Rate: %.2f%%" % (len_pass/(len_pass+len_notpass)*100)
     return id_dict

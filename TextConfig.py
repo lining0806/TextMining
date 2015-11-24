@@ -2,6 +2,7 @@
 from __future__ import division
 __author__ = 'LiNing'
 
+
 import ConfigParser
 import os
 import re
@@ -10,13 +11,12 @@ from MongoDBIO import MongoDBIO
 
 
 def MakeWordsSet(words_file):
-    fp = open(words_file, 'r')
     words_set = set()
-    for line in fp.readlines():
-        word = line.strip().decode("utf-8")
-        if len(word)>0 and word not in words_set: # 去重
-            words_set.add(word)
-    fp.close()
+    with open(words_file, 'r') as fp:
+        for line in fp.readlines():
+            word = line.strip().decode("utf-8")
+            if len(word)>0 and word not in words_set: # 去重
+                words_set.add(word)
     return words_set
 
 country_list = [ u"中国", u"其他", u"美国", u"日本", u"英国", u"德国", u"澳大利亚", u"法国", u"韩国", u"意大利", u"西班牙"]
@@ -25,16 +25,9 @@ Country_Number_Map = dict(zip(country_list, number_list))
 Number_Country_Map = dict(zip(number_list, country_list))
 
 Config_Dir = "./Config"
-assert(os.path.exists(Config_Dir))
 config_file = os.path.join(Config_Dir, "config.ini")
+assert(os.path.exists(Config_Dir))
 assert(os.path.exists(config_file))
-
-Datas_Dir = os.path.join(Config_Dir, "datas")
-all_words_dict_file = os.path.join(Datas_Dir, "all_words_dict")
-train_datas_file = os.path.join(Datas_Dir, "train_datas")
-Fea_Dict_Dir = os.path.join(Datas_Dir, "fea_dict")
-Model_Dir = os.path.join(Datas_Dir, "model")
-best_clf_file = os.path.join(Model_Dir, "best_clf")
 
 Dict_Dir = os.path.join(Config_Dir, "dict")
 dict_file = os.path.join(Dict_Dir, "dict")
@@ -45,11 +38,23 @@ if os.path.exists(user_dict_file):
     jieba.load_userdict(user_dict_file) # 用户词典
 
 Stopwords_Dir = os.path.join(Config_Dir, "stopwords")
-assert(os.path.exists(Stopwords_Dir))
 stopwords_file = os.path.join(Stopwords_Dir, "stopwords")
-notstopwords_file = os.path.join(Stopwords_Dir, "notstopwords")
+blackwords_file = os.path.join(Stopwords_Dir, "blackwords")
+writewords_file = os.path.join(Stopwords_Dir, "writewords")
+assert(os.path.exists(Stopwords_Dir))
 assert(os.path.exists(stopwords_file))
-assert(os.path.exists(notstopwords_file))
+assert(os.path.exists(blackwords_file))
+assert(os.path.exists(writewords_file))
+stopwords_set = MakeWordsSet(stopwords_file)
+blackwords_set = MakeWordsSet(blackwords_file)
+writewords_set = MakeWordsSet(writewords_file)
+
+Datas_Dir = os.path.join(Config_Dir, "datas")
+all_words_dict_file = os.path.join(Datas_Dir, "all_words_dict")
+train_datas_file = os.path.join(Datas_Dir, "train_datas")
+Classifier_Dir = os.path.join(Datas_Dir, "classifier")
+fea_dict_file = os.path.join(Classifier_Dir, "fea_dict")
+best_clf_file = os.path.join(Classifier_Dir, "best_clf")
 
 ## --------------------------------------------------------------------------------
 conf = ConfigParser.ConfigParser()
@@ -89,9 +94,5 @@ to_addr = re.split(r',', re.search(r'\[(.*?)\]', to_addr).group(1).replace(' ', 
 print smtp_server, from_addr, passwd, to_addr, sendmail_flag
 print test_speedup
 
-stopwords_set = MakeWordsSet(stopwords_file)
-notstopwords_set = MakeWordsSet(notstopwords_file)
-
-## --------------------------------------------------------------------------------
 para = (host, port, name, password, database, collection)
 posts = MongoDBIO(*para).Connection()
