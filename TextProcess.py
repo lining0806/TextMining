@@ -17,8 +17,8 @@ from sklearn.svm import SVC
 from sklearn.svm import LinearSVC
 from sklearn.linear_model import LogisticRegression
 from sklearn.naive_bayes import MultinomialNB
-from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.neighbors import KNeighborsClassifier
 from sklearn.cross_validation import StratifiedKFold
 from sklearn.cross_validation import KFold
 from sklearn.metrics import classification_report
