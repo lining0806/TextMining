@@ -52,14 +52,20 @@ def MakeTextMining(*para):
     }
     ## --------------------------------------------------------------------------------
     ## 生成分类器模型
+    feature_selection_flag = False
+    my_selector = None
     if test_speedup and os.path.exists(fea_dict_file) and os.path.exists(best_clf_file):
         words_feature = []
         with open(fea_dict_file, 'r') as fp:
             for line in fp.readlines():
                 word_feature = line.strip().decode("utf-8")
                 words_feature.append(word_feature)
-        with open(best_clf_file, "rb") as fp_pickle:
-            best_clf = pickle.load(fp_pickle)
+        if feature_selection_flag:
+            with open(best_clf_file, "rb") as fp_pickle:
+                my_selector, best_clf = pickle.load(fp_pickle)
+        else:
+            with open(best_clf_file, "rb") as fp_pickle:
+                best_clf = pickle.load(fp_pickle)
     else:
         ## --------------------------------------------------------------------------------
         words_feature = MakeFeatureWordsDict(all_words_tf_dict, all_words_df_dict, stopwords_set, writewords_set, lag, fea_dict_size)
@@ -71,6 +77,9 @@ def MakeTextMining(*para):
             train_class.append(int(train_data[1])) # str转为int
         train_features = np.array(train_features)
         train_class = np.array(train_class)
+        if feature_selection_flag:
+            FeatureSelectorClass = FeatureSelector(train_features, train_class)
+            my_selector, train_features = FeatureSelectorClass.PCA_Selector() #### 可以调整特征选择
         start_time_train = datetime.datetime.now()
         ClassifierTrainClass = ClassifierTrain(train_features, train_class)
         best_clf = ClassifierTrainClass.LR() #### 可以调整分类器训练
@@ -82,8 +91,12 @@ def MakeTextMining(*para):
             for word_feature in words_feature:
                 fp.writelines(word_feature.encode("utf-8")) # 将unicode转换为utf-8
                 fp.writelines("\n")
-        with open(best_clf_file, "wb") as fp_pickle:
-            pickle.dump(best_clf, fp_pickle)
+        if feature_selection_flag:
+            with open(best_clf_file, "wb") as fp_pickle:
+                pickle.dump((my_selector, best_clf), fp_pickle)
+        else:
+            with open(best_clf_file, "wb") as fp_pickle:
+                pickle.dump(best_clf, fp_pickle)
 
     ## --------------------------------------------------------------------------------
     end_time = datetime.datetime.now()
@@ -122,6 +135,8 @@ def MakeTextMining(*para):
                 TextFeatureClass = TextFeature(words_feature, textseg_list)
                 test_features = TextFeatureClass.TextBool() #### 可以调整特征抽取，训练集与测试集保持一致
                 test_features = np.array(test_features)
+                if feature_selection_flag:
+                    test_features = my_selector.transform(test_features)
                 test_class = best_clf.predict(test_features)
                 print '{"_id":ObjectId("%s")} ' % post["_id"], Number_Country_Map[str(test_class[0])] # int转为str
                 ## --------------------------------------------------------------------------------

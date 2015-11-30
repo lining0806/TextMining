@@ -13,6 +13,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.grid_search import GridSearchCV
 from sklearn.grid_search import ParameterGrid
 from sklearn.decomposition import PCA
+from sklearn.feature_selection import SelectKBest, f_classif, chi2
 from sklearn.svm import SVC
 from sklearn.svm import LinearSVC
 from sklearn.linear_model import LogisticRegression
@@ -194,6 +195,23 @@ class TextFeature(object):
             tf_idf_features.append(tf_idf)
         return tf_idf_features
 
+class FeatureSelector(object):
+    # 申明相关的属性
+    def __init__(self, train_features, train_class, k=1000):
+        self.train_features = train_features
+        self.train_class = train_class
+        self.k = k
+
+    def PCA_Selector(self):
+        my_selector = PCA(n_components=self.k).fit(self.train_features)
+        train_features = my_selector.transform(self.train_features)
+        return my_selector, train_features
+
+    def KBest_Selector(self):
+        my_selector = SelectKBest(score_func=f_classif, k=self.k).fit(self.train_features, self.train_class)
+        train_features = my_selector.transform(self.train_features)
+        return my_selector, train_features
+
 class ClassifierTrain(object):
     # 申明相关的属性
     def __init__(self, train_features, train_class):
@@ -274,4 +292,3 @@ class ClassifierTrain(object):
         clf.fit(self.train_features, self.train_class)
         best_clf = clf
         return best_clf
-
