@@ -116,7 +116,7 @@ def MakeTextMining(*para):
             textseg_list = TextSeg(post[content_col], lag)
             textseg_set = set(textseg_list)
             ## --------------------------------------------------------------------------------
-            if (textseg_set & blackwords_set) or len(textseg_set)<=3 or len(textseg_list)<=5:
+            if (textseg_set & blackwords_set) or len(textseg_set)<=5 or len(textseg_list)<=8:
                 #### 文本过滤
                 print '{"_id":ObjectId("%s")} In Blackwords or Too Short' % post["_id"]
                 id_dict["NotPass"][post["_id"]] = post[content_col]
@@ -152,7 +152,7 @@ def MakeTextMining(*para):
                 if datetime.time(0, 0, 0)<post[time_col].time()<datetime.time(6, 0, 0):
                     level = "2"
                     digits = [word for word in textseg_list if word.isdigit()]
-                    if len(textseg_set & writewords_set)>=2 and len(digits)>=3 and len(textseg_set)>=10 and len(textseg_list)>=20:
+                    if len(textseg_set & writewords_set)>=1 and len(digits)>=3 and len(textseg_set)>=10 and len(textseg_list)>=16:
                         level = "3"
                 print '{"_id":ObjectId("%s")} ' % post["_id"], level
                 ## --------------------------------------------------------------------------------
@@ -245,7 +245,7 @@ def MakeTextMining_ClassifyTest(*para):
             textseg_set = set(textseg_list)
             count += 1
             ## --------------------------------------------------------------------------------
-            if blackwords_set & textseg_set or len(textseg_set)<=3 or len(textseg_list)<=5:
+            if blackwords_set & textseg_set or len(textseg_set)<=5 or len(textseg_list)<=8:
                 #### 文本过滤
                 print '{"_id":ObjectId("%s")} In Blackwords or Too Short' % post["_id"]
                 id_dict["NotPass"][post["_id"]] = post[content_col]
