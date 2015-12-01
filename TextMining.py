@@ -99,7 +99,7 @@ def MakeTextMining(*para):
                 pickle.dump(best_clf, fp_pickle)
 
     ## --------------------------------------------------------------------------------
-    delta = datetime.timedelta(days=0, hours=0, minutes=0, seconds=0)
+    delta = datetime.timedelta(days=0, hours=8, minutes=0, seconds=0) # UTC刚好比CST晚8小时
     end_time = datetime.datetime.now()-delta
     start_time = end_time-datetime.timedelta(days=100, hours=0, minutes=0, seconds=0)-delta ## 可以修改查询的时间区段
     for post in posts.find({  ##################################### 查询操作
@@ -156,12 +156,13 @@ def MakeTextMining(*para):
                         level = "3"
                 print '{"_id":ObjectId("%s")} ' % post["_id"], level
                 ## --------------------------------------------------------------------------------
-                id_dict["Pass"][post["_id"]] = (tags, Number_Country_Map[str(test_class[0])], level)
+                id_dict["Pass"][post["_id"]] = (tags, Number_Country_Map[str(test_class[0])], level, post[time_col].strftime('%H:%M'))
         else:
             print '{"_id":ObjectId("%s")} None' % post["_id"]
             id_dict["NotPass"][post["_id"]] = post[content_col]
     ## --------------------------------------------------------------------------------
     len_pass, len_notpass = len(id_dict["Pass"]), len(id_dict["NotPass"])
+    print "number", len_pass+len_notpass
     if len_pass+len_notpass>0:
         print "Pass Rate: %.2f%%" % (len_pass/(len_pass+len_notpass)*100)
     return id_dict
