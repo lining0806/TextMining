@@ -101,7 +101,7 @@ def MakeTextMining(*para):
     ## --------------------------------------------------------------------------------
     delta = datetime.timedelta(days=0, hours=8, minutes=0, seconds=0) # UTC刚好比CST晚8小时
     end_time = datetime.datetime.now()-delta
-    start_time = end_time-datetime.timedelta(days=100, hours=0, minutes=0, seconds=0)-delta ## 可以修改查询的时间区段
+    start_time = end_time-datetime.timedelta(days=0, hours=0, minutes=10, seconds=0)-delta ## 可以修改查询的时间区段
     for post in posts.find({  ##################################### 查询操作
         time_col:{"$gte":start_time, "$lte":end_time},
         content_col:{"$exists":1},
@@ -255,6 +255,12 @@ def MakeTextMining_ClassifyTest(*para):
                 TextFeatureClass = TextFeature(words_feature, textseg_list)
                 test_features = TextFeatureClass.TextBool() #### 可以调整特征抽取，训练集与测试集保持一致
                 test_features = np.array(test_features)
+                '''
+                Reshape your data
+                either using X.reshape(-1, 1) if your data has a single feature
+                or X.reshape(1, -1) if it contains a single sample.
+                '''
+                test_features = test_features.reshape(1, -1)
                 test_class = best_clf.predict(test_features)
                 if Number_Country_Map[str(test_class[0])] == post[country_col]:
                     correct_count += 1
