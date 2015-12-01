@@ -135,6 +135,12 @@ def MakeTextMining(*para):
                 TextFeatureClass = TextFeature(words_feature, textseg_list)
                 test_features = TextFeatureClass.TextBool() #### 可以调整特征抽取，训练集与测试集保持一致
                 test_features = np.array(test_features)
+                '''
+                Reshape your data
+                either using X.reshape(-1, 1) if your data has a single feature
+                or X.reshape(1, -1) if it contains a single sample.
+                '''
+                test_features = test_features.reshape(1, -1)
                 if feature_selection_flag:
                     test_features = my_selector.transform(test_features)
                 test_class = best_clf.predict(test_features)
