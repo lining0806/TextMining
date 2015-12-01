@@ -99,8 +99,9 @@ def MakeTextMining(*para):
                 pickle.dump(best_clf, fp_pickle)
 
     ## --------------------------------------------------------------------------------
-    end_time = datetime.datetime.now()
-    start_time = end_time-datetime.timedelta(days=100, hours=0, minutes=0, seconds=0) ## 可以修改查询的时间区段
+    delta = datetime.timedelta(days=0, hours=0, minutes=0, seconds=0)
+    end_time = datetime.datetime.now()-delta
+    start_time = end_time-datetime.timedelta(days=100, hours=0, minutes=0, seconds=0)-delta ## 可以修改查询的时间区段
     for post in posts.find({  ##################################### 查询操作
         time_col:{"$gte":start_time, "$lte":end_time},
         content_col:{"$exists":1},
