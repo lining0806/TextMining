@@ -101,7 +101,7 @@ def MakeTextMining(*para):
     ## --------------------------------------------------------------------------------
     delta = datetime.timedelta(days=0, hours=8, minutes=0, seconds=0) # UTC刚好比CST晚8小时
     end_time = datetime.datetime.now()-delta
-    start_time = end_time-datetime.timedelta(days=100, hours=0, minutes=0, seconds=0)-delta ## 可以修改查询的时间区段
+    start_time = end_time-datetime.timedelta(days=0, hours=0, minutes=10, seconds=0)-delta ## 可以修改查询的时间区段
     for post in posts.find({  ##################################### 查询操作
         time_col:{"$gte":start_time, "$lte":end_time},
         content_col:{"$exists":1},
@@ -156,7 +156,7 @@ def MakeTextMining(*para):
                         level = "3"
                 print '{"_id":ObjectId("%s")} ' % post["_id"], level
                 ## --------------------------------------------------------------------------------
-                id_dict["Pass"][post["_id"]] = (tags, Number_Country_Map[str(test_class[0])], level, post[time_col].strftime('%H:%M'))
+                id_dict["Pass"][post["_id"]] = (tags, Number_Country_Map[str(test_class[0])], level)
         else:
             print '{"_id":ObjectId("%s")} None' % post["_id"]
             id_dict["NotPass"][post["_id"]] = post[content_col]

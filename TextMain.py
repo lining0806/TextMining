@@ -106,7 +106,6 @@ def DataUpdateAndSave(*para):
         posts.update({"_id":id_data}, {"$set":{keyword_col:id_dict["Pass"][id_data][0],
                                                country_col:id_dict["Pass"][id_data][1],
                                                imp_col:id_dict["Pass"][id_data][2],
-                                               "time":id_dict["Pass"][id_data][3],
                                                "t_status":1}})
         ## --------------------------------------------------------------------------------
         print '{"_id":ObjectId("%s")} Update' % id_data
