@@ -92,7 +92,7 @@ def DataSendMail(*para):
     smtp_server, from_addr, passwd, to_addr, sendmail_flag, id_dict = para
     text = ''
     for id_data in id_dict["NotPass"]:
-        id_content = '{"_id":ObjectId("%s")} In Blackwords\n%s\n' % (id_data, id_dict["NotPass"][id_data])
+        id_content = '{"_id":ObjectId("%s")} NotPass\n%s\n' % (id_data, id_dict["NotPass"][id_data])
         text += id_content
         # text = text.join(id_content) # 错误！join是循环用text连接id_content的字符
     if sendmail_flag and text != '':
