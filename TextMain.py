@@ -110,8 +110,7 @@ def DataUpdateAndSave(*para):
         ## --------------------------------------------------------------------------------
         print '{"_id":ObjectId("%s")} Update' % id_data
 
-
-if __name__ == '__main__':
+def main():
     ## --------------------------------------------------------------------------------
     ## 一旦训练集变化，则需要事先手动删除all_words_dict_file和train_datas_file
     if os.path.exists(all_words_dict_file) and os.path.exists(train_datas_file):
@@ -159,3 +158,6 @@ if __name__ == '__main__':
     # DataUpdateAndSave(*all_para)
 
     ## --------------------------------------------------------------------------------
+
+if __name__ == '__main__':
+    main()
