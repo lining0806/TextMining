@@ -147,11 +147,13 @@ if __name__ == '__main__':
                 time_col, content_col, source_col, t_status_col, keyword_col, country_col, imp_col, limit_number,
                 lag, stopwords_set, blackwords_set, writewords_set,
                 all_words_tf_dict, all_words_df_dict, train_datas, test_speedup)
-    id_dict = MakeTextMining(*all_para)
-    # id_dict = MakeTextMining_ClassifyTest(*all_para) # 测试不同分类器性能
+    # id_dict = MakeTextMining(*all_para)
+    # MakeTextMining_ClassifyTest(*all_para) # 测试不同分类器性能
+    MakeTextMining_Calendar(*all_para) # 财经日历
 
-    all_para = (smtp_server, from_addr, passwd, to_addr, sendmail_flag, id_dict)
-    DataSendMail(*all_para)
+    ## --------------------------------------------------------------------------------
+    # all_para = (smtp_server, from_addr, passwd, to_addr, sendmail_flag, id_dict)
+    # DataSendMail(*all_para)
 
     # all_para = (posts, keyword_col, country_col, imp_col, id_dict)
     # DataUpdateAndSave(*all_para)

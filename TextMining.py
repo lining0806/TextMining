@@ -317,5 +317,34 @@ def MakeTextMining_ClassifyTest(*para):
     if count>0:
         print "accuracy of classification: %.2f%%" % (correct_count/count*100)
 
+def MakeTextMining_Calendar(*para):
+    posts, \
+    time_col, content_col, source_col, t_status_col, keyword_col, country_col, imp_col, limit_number, \
+    lag, stopwords_set, blackwords_set, writewords_set, \
+    all_words_tf_dict, all_words_df_dict, train_datas, test_speedup = para
     ## --------------------------------------------------------------------------------
-    return id_dict
+    start_time = datetime.datetime(2014, 1, 1)
+    end_time = datetime.datetime.now()
+    count = 0
+    count_cal = 0
+    source_dict = {}
+    for post in posts.find({  ##################################### 查询操作
+        time_col:{"$gte":start_time, "$lte":end_time},
+        content_col:{"$exists":1},
+        source_col:{"$exists":1},
+        "datatype":{"$exists":1},
+    },):
+        count += 1
+        if source_dict.has_key(post[source_col]):
+            source_dict[post[source_col]] += 1
+        else:
+            source_dict[post[source_col]] = 1
+        if post[source_col] == "fx168":
+            print post[content_col]
+            count_cal += 1
+    print "count:", count_cal, "count_cal:", count_cal
+    if count>0:
+        print "calendar rate: %.2f%%" % (count_cal/count*100)
+    sorted_source = sorted(source_dict.items(), key=lambda f:f[1], reverse=True)
+    for k, v in sorted_source:
+        print k, v
