@@ -101,7 +101,7 @@ def MakeTextMining(*para):
     ## --------------------------------------------------------------------------------
     delta = datetime.timedelta(days=0, hours=8, minutes=0, seconds=0) # UTC刚好比CST晚8小时
     end_time = datetime.datetime.now()-delta
-    start_time = end_time-datetime.timedelta(days=0, hours=0, minutes=10, seconds=0)-delta ## 可以修改查询的时间区段
+    start_time = end_time-datetime.timedelta(days=0, hours=0, minutes=30, seconds=0)-delta ## 可以修改查询的时间区段
     for post in posts.find({  ##################################### 查询操作
         time_col:{"$gte":start_time, "$lte":end_time},
         content_col:{"$exists":1},
