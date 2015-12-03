@@ -101,7 +101,7 @@ def MakeTextMining(*para):
     ## --------------------------------------------------------------------------------
     delta = datetime.timedelta(days=0, hours=8, minutes=0, seconds=0) # UTC刚好比CST晚8小时
     end_time = datetime.datetime.now()-delta
-    start_time = end_time-datetime.timedelta(days=0, hours=0, minutes=30, seconds=0)-delta ## 可以修改查询的时间区段
+    start_time = end_time-datetime.timedelta(days=200, hours=0, minutes=30, seconds=0)-delta ## 可以修改查询的时间区段
     for post in posts.find({  ##################################### 查询操作
         time_col:{"$gte":start_time, "$lte":end_time},
         content_col:{"$exists":1},
@@ -171,8 +171,8 @@ def MakeTextMining(*para):
         #### 文本关键词提取
         TextExtractTagsClass = TextExtractTags(textseg_list, stopwords_set, writewords_set, topK=3)
         # tags = TextExtractTagsClass.Tags_Words_Feature(words_feature)
-        # tags = TextExtractTagsClass.Tags_Tf(lag)
-        tags = TextExtractTagsClass.Tags_TfIDf(all_words_df_dict, train_datas_count, lag)
+        tags = TextExtractTagsClass.Tags_Tf(lag)
+        # tags = TextExtractTagsClass.Tags_TfIDf(all_words_df_dict, train_datas_count, lag)
         print '{"_id":ObjectId("%s")} ' % post["_id"],
         for tag in tags:
             print tag,
@@ -197,9 +197,9 @@ def MakeTextMining(*para):
         level = "1"
         if datetime.time(0, 0, 0)<post[time_col].time()<datetime.time(6, 0, 0):
             level = "2"
-            digits = [word for word in textseg_list if word.isdigit()]
-            if len(textseg_set & writewords_set)>=1 and len(digits)>=3 and len(textseg_set)>=10 and len(textseg_list)>=16:
-                level = "3"
+        digits = [word for word in textseg_list if word.isdigit()]
+        if len(textseg_set & writewords_set)>=0 and len(digits)>=2 and len(textseg_set)>=10 and len(textseg_list)>=16:
+            level = "3"
         print '{"_id":ObjectId("%s")} ' % post["_id"], level
         ## --------------------------------------------------------------------------------
         id_dict["Pass"][post["_id"]] = (tags, Number_Country_Map[str(test_class[0])], level)

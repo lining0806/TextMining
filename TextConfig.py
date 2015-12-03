@@ -96,3 +96,43 @@ print test_speedup
 
 para = (host, port, name, password, database, collection)
 posts = MongoDBIO(*para).Connection()
+
+## --------------------------------------------------------------------------------
+
+para_words = (host, port, name, password, database, "cn_live_news_words")
+posts_words = MongoDBIO(*para_words).Connection()
+
+## 插入
+if posts_words.count() == 0:
+    stopwords_set_list = []
+    blackwords_set_list = []
+    writewords_set_list = []
+    for i in stopwords_set:
+        stopwords_set_list.append({"word":i,"type":0})
+    for i in writewords_set:
+        blackwords_set_list.append({"word":i,"type":1})
+    for i in blackwords_set:
+        writewords_set_list.append({"word":i,"type":2})
+    posts_words.insert(stopwords_set_list)
+    posts_words.insert(blackwords_set_list)
+    posts_words.insert(writewords_set_list)
+
+## 查询
+stopwords_set_database = set()
+blackwords_set_database = set()
+writewords_set_database = set()
+for post in posts_words.find({
+        "words":{"$exists":1},
+        "type":{"$exists":1},
+    },):
+    if post["type"] == 0:
+        stopwords_set.add(post["words"])
+    elif post["type"] == 1:
+        writewords_set.add(post["words"])
+    elif post["type"] == 2:
+        blackwords_set.add(post["words"])
+    else:
+        pass
+stopwords_set = stopwords_set_database
+blackwords_set = blackwords_set_database
+writewords_set = writewords_set_database
