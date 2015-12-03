@@ -288,7 +288,7 @@ def MakeTextMining_ClassifyTest(*para):
         source_col:{"$exists":1},
         t_status_col:1, # 已发布的
         keyword_col:{"$exists":1}, country_col:{"$exists":1}, imp_col:{"$exists":1},
-    },): #.sort(time_col, pymongo.DESCENDING).limit(limit_number):
+    },): #.sort(time_col, -1).limit(limit_number):
         ## --------------------------------------------------------------------------------
         # print post
         if post[content_col] is not None:
