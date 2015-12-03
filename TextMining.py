@@ -197,6 +197,8 @@ def MakeTextMining(*para):
         level = "1"
         if datetime.time(0, 0, 0)<post[time_col].time()<datetime.time(6, 0, 0):
             level = "2"
+        if len(textseg_set)>=10 and len(textseg_list)>=16:
+            level = "2"
         digits = [word for word in textseg_list if word.isdigit()]
         if len(textseg_set & writewords_set)>=0 and len(digits)>=2 and len(textseg_set)>=10 and len(textseg_list)>=16:
             level = "3"
