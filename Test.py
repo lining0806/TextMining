@@ -16,7 +16,7 @@ while 1:
     time_ = date_time.time()
     if start_time<time_<end_time:
         print time_
-        # Main()
+        Main()
         count += 1
     if count == max_count:
         break
