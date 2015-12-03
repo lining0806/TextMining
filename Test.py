@@ -11,7 +11,6 @@ end_time = datetime.time(6, 0, 0)
 sleep_seconds = 30*60
 count, max_count = 0, 100
 while 1:
-    time.sleep(sleep_seconds)
     date_time = datetime.datetime.now()
     time_ = date_time.time()
     if start_time<time_<end_time:
@@ -20,3 +19,4 @@ while 1:
         count += 1
     if count == max_count:
         break
+    time.sleep(sleep_seconds)
