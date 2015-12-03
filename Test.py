@@ -9,14 +9,16 @@ end_time = datetime.time(6, 0, 0)
 # print start_time<end_time
 ##　----------------------------------------------------------------------
 sleep_seconds = 30*60
-count, max_count = 0, 100
+count, max_count = 0, 1
 while 1:
     date_time = datetime.datetime.now()
     time_ = date_time.time()
     if start_time<time_<end_time:
-        print time_
+        print "Execution time:", time_
         Main()
         count += 1
+    else:
+        print "Waiting time:", time_
     if count == max_count:
         break
     time.sleep(sleep_seconds)
