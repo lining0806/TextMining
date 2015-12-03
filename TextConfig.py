@@ -39,15 +39,15 @@ if os.path.exists(user_dict_file):
 
 Stopwords_Dir = os.path.join(Config_Dir, "stopwords")
 stopwords_file = os.path.join(Stopwords_Dir, "stopwords")
-blackwords_file = os.path.join(Stopwords_Dir, "blackwords")
 writewords_file = os.path.join(Stopwords_Dir, "writewords")
+blackwords_file = os.path.join(Stopwords_Dir, "blackwords")
 assert(os.path.exists(Stopwords_Dir))
 assert(os.path.exists(stopwords_file))
-assert(os.path.exists(blackwords_file))
 assert(os.path.exists(writewords_file))
+assert(os.path.exists(blackwords_file))
 stopwords_set = MakeWordsSet(stopwords_file)
-blackwords_set = MakeWordsSet(blackwords_file)
 writewords_set = MakeWordsSet(writewords_file)
+blackwords_set = MakeWordsSet(blackwords_file)
 
 Datas_Dir = os.path.join(Config_Dir, "datas")
 all_words_dict_file = os.path.join(Datas_Dir, "all_words_dict")
@@ -105,34 +105,34 @@ posts_words = MongoDBIO(*para_words).Connection()
 ## 插入
 if posts_words.count() == 0:
     stopwords_set_list = []
-    blackwords_set_list = []
     writewords_set_list = []
+    blackwords_set_list = []
     for i in stopwords_set:
-        stopwords_set_list.append({"word":i,"type":0})
+        stopwords_set_list.append({"words":i,"type":0})
     for i in writewords_set:
-        blackwords_set_list.append({"word":i,"type":1})
+        writewords_set_list.append({"words":i,"type":1})
     for i in blackwords_set:
-        writewords_set_list.append({"word":i,"type":2})
+        blackwords_set_list.append({"words":i,"type":2})
     posts_words.insert(stopwords_set_list)
-    posts_words.insert(blackwords_set_list)
     posts_words.insert(writewords_set_list)
+    posts_words.insert(blackwords_set_list)
 
 ## 查询
 stopwords_set_database = set()
-blackwords_set_database = set()
 writewords_set_database = set()
+blackwords_set_database = set()
 for post in posts_words.find({
         "words":{"$exists":1},
         "type":{"$exists":1},
     },):
     if post["type"] == 0:
-        stopwords_set.add(post["words"])
+        stopwords_set_database.add(post["words"])
     elif post["type"] == 1:
-        writewords_set.add(post["words"])
+        writewords_set_database.add(post["words"])
     elif post["type"] == 2:
-        blackwords_set.add(post["words"])
+        blackwords_set_database.add(post["words"])
     else:
         pass
 stopwords_set = stopwords_set_database
-blackwords_set = blackwords_set_database
 writewords_set = writewords_set_database
+blackwords_set = blackwords_set_database

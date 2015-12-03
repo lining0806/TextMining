@@ -120,7 +120,7 @@ def MakeTextMining(*para):
             if textseg_set & blackwords_set:
                 print '{"_id":ObjectId("%s")} In Blackwords' % post["_id"]
                 id_dict["NotPass"][post["_id"]] = None
-            elif len(textseg_set)<=5 or len(textseg_list)<=8:
+            elif len(textseg_set)<=5 or len(textseg_list)<=10:
                 print '{"_id":ObjectId("%s")} Too Short' % post["_id"]
                 id_dict["NotPass"][post["_id"]] = None
             else:
@@ -195,12 +195,10 @@ def MakeTextMining(*para):
         ## --------------------------------------------------------------------------------
         #### 文本推荐
         level = "1"
-        if datetime.time(0, 0, 0)<post[time_col].time()<datetime.time(6, 0, 0):
-            level = "2"
-        if len(textseg_set)>=10 and len(textseg_list)>=16:
+        if datetime.time(0, 0, 0)<post[time_col].time()<datetime.time(6, 0, 0) or len(textseg_set)>=10 and len(textseg_list)>=20:
             level = "2"
         digits = [word for word in textseg_list if word.isdigit()]
-        if len(textseg_set & writewords_set)>=0 and len(digits)>=2 and len(textseg_set)>=10 and len(textseg_list)>=16:
+        if len(textseg_set & writewords_set)>=1 and len(digits)>=2 and len(textseg_set)>=10 and len(textseg_list)>=20:
             level = "3"
         print '{"_id":ObjectId("%s")} ' % post["_id"], level
         ## --------------------------------------------------------------------------------
