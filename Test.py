@@ -4,16 +4,17 @@ import time
 
 from TextMain import Main
 
-start_time = datetime.time(0, 0, 0)
-end_time = datetime.time(6, 0, 0)
-# print start_time<end_time
+start_time0 = datetime.time(22, 0, 0)
+end_time0 = datetime.time(23, 59, 59)
+start_time1 = datetime.time(0, 0, 0)
+end_time1 = datetime.time(6, 0, 0)
 ##　----------------------------------------------------------------------
 sleep_seconds = 30*60
-count, max_count = 0, 1
+count, max_count = 0, 100
 while 1:
     date_time = datetime.datetime.now()
     time_ = date_time.time()
-    if start_time<time_<end_time:
+    if start_time0<=time_<=end_time0 or start_time1<=time_<=end_time1:
         print "Execution time:", time_
         Main()
         count += 1
