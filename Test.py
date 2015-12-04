@@ -4,10 +4,10 @@ import time
 
 from TextMain import Main
 
-start_time0 = datetime.time(22, 0, 0)
+start_time0 = datetime.time(23, 59, 59)
 end_time0 = datetime.time(23, 59, 59)
 start_time1 = datetime.time(0, 0, 0)
-end_time1 = datetime.time(6, 0, 0)
+end_time1 = datetime.time(8, 0, 0)
 ##　----------------------------------------------------------------------
 sleep_seconds = 30*60
 count, max_count = 0, 200
