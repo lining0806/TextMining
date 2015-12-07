@@ -139,12 +139,23 @@ def MakeTextMining(*para):
                     flag = 1
                     k_list = id_dict["Pass"].keys()
                     for k in k_list:
-                        if id_dict["Pass"][k] & textseg_set == textseg_set: # 如果元素包含textseg_set，则不添加，包括二者相等情况
+                        # if id_dict["Pass"][k] & textseg_set == textseg_set: # 如果元素包含textseg_set，则不添加，包括二者相等情况
+                        #     flag = 0
+                        #     print '{"_id":ObjectId("%s")} Duplicate' % post["_id"]
+                        #     id_dict["NotPass"][post["_id"]] = None
+                        #     break
+                        # elif id_dict["Pass"][k] & textseg_set == id_dict["Pass"][k]: # 如果textseg_set包含元素，则除去元素添加textseg_set
+                        #     id_dict["Pass"].pop(k)
+                        #     print '{"_id":ObjectId("%s")} Duplicate' % k
+                        #     id_dict["NotPass"][k] = None
+                        # else:
+                        #     pass
+                        if 1-len(id_dict["Pass"][k] & textseg_set)/len(textseg_set) <= 0.2: # 如果元素包含textseg_set，则不添加，包括二者相等情况
                             flag = 0
                             print '{"_id":ObjectId("%s")} Duplicate' % post["_id"]
                             id_dict["NotPass"][post["_id"]] = None
                             break
-                        elif id_dict["Pass"][k] & textseg_set == id_dict["Pass"][k]: # 如果textseg_set包含元素，则除去元素添加textseg_set
+                        elif 1-len(id_dict["Pass"][k] & textseg_set)/len(id_dict["Pass"][k]) <= 0.2: # 如果textseg_set包含元素，则除去元素添加textseg_set
                             id_dict["Pass"].pop(k)
                             print '{"_id":ObjectId("%s")} Duplicate' % k
                             id_dict["NotPass"][k] = None
