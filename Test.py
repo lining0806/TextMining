@@ -10,7 +10,7 @@ start_time1 = datetime.time(0, 0, 0)
 end_time1 = datetime.time(8, 0, 0)
 ##　----------------------------------------------------------------------
 sleep_seconds = 30*60
-count, max_count = 0, 200
+count, max_count = 0, 300
 while 1:
     date_time = datetime.datetime.now()
     time_ = date_time.time()
