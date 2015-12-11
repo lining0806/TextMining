@@ -16,10 +16,10 @@ from sklearn.decomposition import PCA
 from sklearn.feature_selection import SelectKBest, f_classif, chi2
 from sklearn.svm import SVC
 from sklearn.svm import LinearSVC
-from sklearn.linear_model import LogisticRegression
 from sklearn.naive_bayes import MultinomialNB
-from sklearn.tree import DecisionTreeClassifier
+from sklearn.linear_model import LogisticRegression
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.tree import DecisionTreeClassifier
 from sklearn.cross_validation import StratifiedKFold
 from sklearn.cross_validation import KFold
 from sklearn.metrics import classification_report
@@ -269,26 +269,26 @@ class ClassifierTrain(object):
         best_clf = clf
         return best_clf
 
-    def LR(self):
-        clf = LogisticRegression()
-        clf.fit(self.train_features, self.train_class)
-        best_clf = clf
-        return best_clf
-
     def NB(self):
         clf = MultinomialNB()
         clf.fit(self.train_features, self.train_class)
         best_clf = clf
         return best_clf
 
-    def DT(self):
-        clf = DecisionTreeClassifier()
+    def LR(self):
+        clf = LogisticRegression()
         clf.fit(self.train_features, self.train_class)
         best_clf = clf
         return best_clf
 
     def KNN(self):
         clf = KNeighborsClassifier(n_neighbors=100)
+        clf.fit(self.train_features, self.train_class)
+        best_clf = clf
+        return best_clf
+
+    def DT(self):
+        clf = DecisionTreeClassifier()
         clf.fit(self.train_features, self.train_class)
         best_clf = clf
         return best_clf

@@ -60,7 +60,7 @@
 * 可以更改文本过滤及去重算法
 * 可以更改关键词提取算法，可选基于特征词提取、基于Tf提取、基于TfIDf提取，可以更改前K个关键词筛选方法
 * 可以更改训练集和测试集的特征生成，可选Bool特征、Tf特征、IDf特征、TfIDf特征，可以选择进行特征选择或降维
-* 可以更改文本分类算法，可选SVC、LinearSVC、LogisticRegression、MultinomialNB、DecisionTreeClassifier、KNeighborsClassifier，可以更改算法调参寻优的方法
+* 可以更改文本分类算法，可选SVC、LinearSVC、MultinomialNB、LogisticRegression、KNeighborsClassifier、DecisionTreeClassifier，可以更改算法调参寻优的方法
 * 可以更改文本推荐算法
 
 ## 其他说明
