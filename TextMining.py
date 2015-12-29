@@ -31,7 +31,7 @@ def MakeTextMining(*para):
     posts, \
     time_col, content_col, source_col, t_status_col, keyword_col, country_col, imp_col, limit_number, \
     lag, stopwords_set, blackwords_set, writewords_set, \
-    all_words_tf_dict, all_words_df_dict, train_datas, test_speedup = para
+    all_words_tf_dict, all_words_idf_dict, train_datas, test_speedup = para
     train_datas_count = len(train_datas)
     ## --------------------------------------------------------------------------------
     '''
@@ -68,7 +68,7 @@ def MakeTextMining(*para):
                 best_clf = pickle.load(fp_pickle)
     else:
         ## --------------------------------------------------------------------------------
-        words_feature = MakeFeatureWordsDict(all_words_tf_dict, all_words_df_dict, stopwords_set, writewords_set, lag, fea_dict_size)
+        words_feature = MakeFeatureWordsDict(all_words_tf_dict, stopwords_set, writewords_set, lag, fea_dict_size)
         train_features = []
         train_class = []
         for train_data in train_datas:
@@ -183,7 +183,8 @@ def MakeTextMining(*para):
         TextExtractTagsClass = TextExtractTags(textseg_list, stopwords_set, writewords_set, topK=3)
         # tags = TextExtractTagsClass.Tags_Words_Feature(words_feature)
         tags = TextExtractTagsClass.Tags_Tf(lag)
-        # tags = TextExtractTagsClass.Tags_TfIDf(all_words_df_dict, train_datas_count, lag)
+        # tags = TextExtractTagsClass.Tags_IDf(all_words_idf_dict, train_datas_count, lag)
+        # tags = TextExtractTagsClass.Tags_TfIDf(all_words_idf_dict, train_datas_count, lag)
         print '{"_id":ObjectId("%s")} ' % post["_id"],
         for tag in tags:
             print tag,
@@ -222,7 +223,7 @@ def MakeTextMining_ClassifyTest(*para):
     posts, \
     time_col, content_col, source_col, t_status_col, keyword_col, country_col, imp_col, limit_number, \
     lag, stopwords_set, blackwords_set, writewords_set, \
-    all_words_tf_dict, all_words_df_dict, train_datas, test_speedup = para
+    all_words_tf_dict, all_words_idf_dict, train_datas, test_speedup = para
     ## --------------------------------------------------------------------------------
     '''
     id_dict = {
@@ -258,7 +259,7 @@ def MakeTextMining_ClassifyTest(*para):
                 best_clf = pickle.load(fp_pickle)
     else:
         ## --------------------------------------------------------------------------------
-        words_feature = MakeFeatureWordsDict(all_words_tf_dict, all_words_df_dict, stopwords_set, writewords_set, lag, fea_dict_size)
+        words_feature = MakeFeatureWordsDict(all_words_tf_dict, stopwords_set, writewords_set, lag, fea_dict_size)
         train_features = []
         train_class = []
         for train_data in train_datas:
@@ -332,7 +333,7 @@ def MakeTextMining_Calendar(*para):
     posts, \
     time_col, content_col, source_col, t_status_col, keyword_col, country_col, imp_col, limit_number, \
     lag, stopwords_set, blackwords_set, writewords_set, \
-    all_words_tf_dict, all_words_df_dict, train_datas, test_speedup = para
+    all_words_tf_dict, all_words_idf_dict, train_datas, test_speedup = para
     ## --------------------------------------------------------------------------------
     start_time = datetime.datetime(2014, 1, 1)
     end_time = datetime.datetime.now()

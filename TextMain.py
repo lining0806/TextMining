@@ -34,7 +34,7 @@ def MakeAllWordsDict(*para):
     lag = para
     ## --------------------------------------------------------------------------------
     all_words_tf_dict = {}
-    all_words_df_dict = {}
+    all_words_idf_dict = {}
     train_datas = []
     # all_source_dict = {}
     # all_country_dict = {}
@@ -59,11 +59,11 @@ def MakeAllWordsDict(*para):
                     all_words_tf_dict[testseg] += 1
                 else:
                     all_words_tf_dict[testseg] = 1
-            for testseg in set(textseg_list): ## all_words_df_dict为包含该词的文档频率
-                if all_words_df_dict.has_key(testseg):
-                    all_words_df_dict[testseg] += 1
+            for testseg in set(textseg_list): ## all_words_idf_dict为包含该词的逆文档频率
+                if all_words_idf_dict.has_key(testseg):
+                    all_words_idf_dict[testseg] += 1
                 else:
-                    all_words_df_dict[testseg] = 1
+                    all_words_idf_dict[testseg] = 1
             train_datas.append((textseg_list, Country_Number_Map[post[country_col]]))
             ## --------------------------------------------------------------------------------
             # if all_source_dict.has_key(post[source_col]):
@@ -83,10 +83,10 @@ def MakeAllWordsDict(*para):
     #     print key_country, all_country_dict[key_country]
     train_datas_count = len(train_datas)
     print "number of all the train datas:", train_datas_count
-    for k in all_words_df_dict:
-        all_words_df_dict[k] = math.log(train_datas_count/(1+all_words_df_dict[k]))
+    for k in all_words_idf_dict:
+        all_words_idf_dict[k] = math.log(train_datas_count/(1+all_words_idf_dict[k]))
     ## --------------------------------------------------------------------------------
-    return all_words_tf_dict, all_words_df_dict, train_datas
+    return all_words_tf_dict, all_words_idf_dict, train_datas
 
 def DataSendMail(*para):
     smtp_server, from_addr, passwd, to_addr, sendmail_flag, id_dict = para
@@ -115,11 +115,11 @@ def Main():
     ## 一旦训练集变化，则需要事先手动删除all_words_dict_file和train_datas_file
     if os.path.exists(all_words_dict_file) and os.path.exists(train_datas_file):
         # with open(all_words_dict_file, "rb") as fp_pickle:
-        #     all_words_tf_dict, all_words_df_dict = pickle.load(fp_pickle)
+        #     all_words_tf_dict, all_words_idf_dict = pickle.load(fp_pickle)
         # with open(train_datas_file, "rb") as fp_pickle:
         #     train_datas = pickle.load(fp_pickle)
         with open(all_words_dict_file, "rb") as fp_json:
-            all_words_tf_dict, all_words_df_dict = json.load(fp_json)
+            all_words_tf_dict, all_words_idf_dict = json.load(fp_json)
         with open(train_datas_file, "rb") as fp_json:
             train_datas = json.load(fp_json)
     else:
@@ -128,13 +128,13 @@ def Main():
         all_para = (posts,
                     time_col, content_col, source_col, t_status_col, keyword_col, country_col, imp_col, limit_number,
                     lag)
-        all_words_tf_dict, all_words_df_dict, train_datas = MakeAllWordsDict(*all_para)
+        all_words_tf_dict, all_words_idf_dict, train_datas = MakeAllWordsDict(*all_para)
         # with open(all_words_dict_file, "wb") as fp_pickle:
-        #     pickle.dump((all_words_tf_dict, all_words_df_dict), fp_pickle)
+        #     pickle.dump((all_words_tf_dict, all_words_idf_dict), fp_pickle)
         # with open(train_datas_file, "wb") as fp_pickle:
         #     pickle.dump(train_datas, fp_pickle)
         with open(all_words_dict_file, "wb") as fp_json:
-            json.dump((all_words_tf_dict, all_words_df_dict), fp_json)
+            json.dump((all_words_tf_dict, all_words_idf_dict), fp_json)
         with open(train_datas_file, "wb") as fp_json:
             json.dump(train_datas, fp_json)
         #### 删除之前与之相关的文件
@@ -145,7 +145,7 @@ def Main():
     all_para = (posts,
                 time_col, content_col, source_col, t_status_col, keyword_col, country_col, imp_col, limit_number,
                 lag, stopwords_set, blackwords_set, writewords_set,
-                all_words_tf_dict, all_words_df_dict, train_datas, test_speedup)
+                all_words_tf_dict, all_words_idf_dict, train_datas, test_speedup)
     id_dict = MakeTextMining(*all_para)
     # MakeTextMining_ClassifyTest(*all_para) # 测试不同分类器性能
     # MakeTextMining_Calendar(*all_para)

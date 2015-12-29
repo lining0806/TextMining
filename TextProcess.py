@@ -54,7 +54,7 @@ def WordLen(lag):
     else:
         return 1, 15
 
-def MakeFeatureWordsDict(all_words_tf_dict, all_words_df_dict, stopwords_set, writewords_set, lag, fea_dict_size):
+def MakeFeatureWordsDict(all_words_tf_dict, stopwords_set, writewords_set, lag, fea_dict_size):
     ## --------------------------------------------------------------------------------
     words_feature = list(writewords_set)
     n = len(words_feature)
@@ -62,7 +62,6 @@ def MakeFeatureWordsDict(all_words_tf_dict, all_words_df_dict, stopwords_set, wr
     filterword_set = stopwords_set | writewords_set
     wordlen_min, wordlen_max = WordLen(lag)
     all_sorted_words_tuple_list = sorted(all_words_tf_dict.items(), key=lambda f:f[1], reverse=True)
-    # all_sorted_words_tuple_list = sorted(all_words_df_dict.items(), key=lambda f:f[1], reverse=True)
     all_sorted_words_list = list(zip(*all_sorted_words_tuple_list)[0])
     # all_sorted_words_list = []
     # for sorted_word, times in all_sorted_words_tuple_list:
@@ -134,7 +133,20 @@ class TextExtractTags(object):
             tf_dict[key] /= length
         return self.SelectK(tf_dict)
 
-    def Tags_TfIDf(self, all_words_df_dict, train_datas_count, lag):
+    def Tags_IDf(self, all_words_idf_dict, train_datas_count, lag):
+        ## --------------------------------------------------------------------------------
+        wordlen_min, wordlen_max = WordLen(lag)
+        idf_dict = {}
+        words = set(self.text)
+        for word in words:
+            if re.match(ur'^[\u4e00-\u9fa5]+$|^[a-z A-Z -]+$', word) and wordlen_min<len(word)<wordlen_max:
+                if word in all_words_idf_dict:
+                    idf_dict[word] = all_words_idf_dict[word]
+                else:
+                    idf_dict[word] = math.log(train_datas_count)
+        return self.SelectK(idf_dict)
+
+    def Tags_TfIDf(self, all_words_idf_dict, train_datas_count, lag):
         ## --------------------------------------------------------------------------------
         wordlen_min, wordlen_max = WordLen(lag)
         tf_idf_dict = {}
@@ -146,10 +158,11 @@ class TextExtractTags(object):
                     tf_idf_dict[word] = 1
         length = len(self.text)
         for key in tf_idf_dict:
-            if key in all_words_df_dict:
-                tf_idf_dict[key] = tf_idf_dict[key]/length*all_words_df_dict[key]
+            tf_idf_dict[key] /= length
+            if key in all_words_idf_dict:
+                tf_idf_dict[key] *= all_words_idf_dict[key]
             else:
-                tf_idf_dict[key] = tf_idf_dict[key]/length*math.log(train_datas_count)
+                tf_idf_dict[key] *= math.log(train_datas_count)
         return self.SelectK(tf_idf_dict)
 
 class TextFeature(object):
@@ -177,20 +190,20 @@ class TextFeature(object):
             tf_features.append(tf)
         return tf_features
 
-    def TextIDf(self, all_words_df_dict):
+    def TextIDf(self, all_words_idf_dict): # 与text无关
         idf_features = []
         for word_feature in self.words_feature:
-            idf = all_words_df_dict[word_feature]
+            idf = all_words_idf_dict[word_feature]
             idf_features.append(idf)
         return idf_features
 
-    def TextTfIDf(self, all_words_df_dict):
+    def TextTfIDf(self, all_words_idf_dict):
         tf_idf_features = []
         length = len(self.text)
         for word_feature in self.words_feature:
             word_count = self.text.count(word_feature)
             tf = word_count/length
-            idf = all_words_df_dict[word_feature]
+            idf = all_words_idf_dict[word_feature]
             tf_idf = tf*idf
             tf_idf_features.append(tf_idf)
         return tf_idf_features
