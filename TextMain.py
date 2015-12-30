@@ -108,6 +108,17 @@ def DataUpdateAndSave(*para):
                                                imp_col:id_dict["Pass"][id_data][2],
                                                "t_status":1}})
         ## --------------------------------------------------------------------------------
+        ## 动态加载
+        # import requests
+        # url = ''
+        # data = {
+        #     keyword_col:id_dict["Pass"][id_data][0],
+        #     country_col:id_dict["Pass"][id_data][1],
+        #     imp_col:id_dict["Pass"][id_data][2],
+        #     "t_status":1
+        # }
+        # response = requests.post(url=url, data=data)
+        ## --------------------------------------------------------------------------------
         print '{"_id":ObjectId("%s")} Update' % id_data
 
 def Main():
