@@ -89,20 +89,23 @@ class TextExtractTags(object):
         self.topK = topK
 
     def SelectK(self, words_dict):
-        ## --------------------------------------------------------------------------------
-        words_tuple_list = sorted(words_dict.items(), key=lambda f:f[1], reverse=True)
-        sorted_words = list(zip(*words_tuple_list)[0])
-        # sorted_words = []
-        # for key, value in words_tuple_list:
-        #     sorted_words.append(key)
-        #### 直接截断
-        # new_sorted_words = filter(lambda f:f not in self.stopwords_set, sorted_words)
-        ####
-        new_sorted_words = filter(lambda f:f in self.writewords_set, sorted_words)
-        new_sorted_words.extend(filter(lambda f:f not in (self.stopwords_set | self.writewords_set), sorted_words))
-        ## --------------------------------------------------------------------------------
-        tags = new_sorted_words[:self.topK]
-        return tags
+        if words_dict == {}:
+            return []
+        else:
+            ## --------------------------------------------------------------------------------
+            words_tuple_list = sorted(words_dict.items(), key=lambda f:f[1], reverse=True)
+            sorted_words = list(zip(*words_tuple_list)[0])
+            # sorted_words = []
+            # for key, value in words_tuple_list:
+            #     sorted_words.append(key)
+            #### 直接截断
+            # new_sorted_words = filter(lambda f:f not in self.stopwords_set, sorted_words)
+            ####
+            new_sorted_words = filter(lambda f:f in self.writewords_set, sorted_words)
+            new_sorted_words.extend(filter(lambda f:f not in (self.stopwords_set | self.writewords_set), sorted_words))
+            ## --------------------------------------------------------------------------------
+            tags = new_sorted_words[:self.topK]
+            return tags
 
     def Tags_Words_Feature(self, words_feature):
         ## --------------------------------------------------------------------------------
