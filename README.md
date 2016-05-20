@@ -10,6 +10,9 @@
 * 集成了**文本推荐**即**热点评价**的功能
 * **支持中英文**
 
+## 系统架构图
+![Architecture of Text Mining System](http://www.lining0806.com/wp-content/uploads/2016/05/Architecture-of-Text-Mining-System.png)
+
 ## Config树结构
 
 	Config:.
