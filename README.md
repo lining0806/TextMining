@@ -13,28 +13,6 @@
 ## 系统架构图
 ![Architecture of Text Mining System](http://www.lining0806.com/wp-content/uploads/2016/05/Architecture-of-Text-Mining-System.png)
 
-## Config树结构
-
-	Config:.
-	│  config.ini
-	│  
-	├─datas
-	│  │  all_words_dict
-	│  │  train_datas
-	│  │  
-	│  └─classifier
-	│          best_clf
-	│          fea_dict
-	│          
-	├─dict
-	│      dict
-	│      user_dict
-	│      
-	└─stopwords
-	        blackwords
-	        stopwords
-	        writewords
-
 ## 关于分词
 **英文分词，采用nltk工具包进行分词**  
 
