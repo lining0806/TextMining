@@ -10,6 +10,27 @@
 * 集成了**文本推荐**即**热点评价**的功能
 * **支持中英文**
 
+## Config树结构
+
+	Config:.
+	│  config.ini
+	│  
+	├─datas
+	│  │  all_words_dict
+	│  │  train_datas
+	│  │  
+	│  └─classifier
+	│          best_clf
+	│          fea_dict
+	│          
+	├─dict
+	│      dict
+	│      user_dict
+	│      
+	└─stopwords
+	        blackwords
+	        stopwords
+	        writewords
 
 ## 关于分词
 **英文分词，采用nltk工具包进行分词**  
