@@ -27,10 +27,12 @@ def _format_addr(s):
          addr.encode('utf-8') if isinstance(addr, unicode) else addr)
     )
 
-def send_mail(smtp_server, from_addr, passwd, to_addr, subject, text, files=[]):
+def send_mail(smtp_server, from_addr, passwd, to_addr, subject, text='Hello, send by Python...', files=[]):
     ## --------------------------------------------------------------------------------------
-    assert type(to_addr) == list
-    assert type(files) == list
+    # assert type(to_addr) == list
+    # assert type(files) == list
+    assert isinstance(to_addr, list)
+    assert isinstance(files, list)
 
     ## --------------------------------------------------------------------------------------
     '''plain or html'''
