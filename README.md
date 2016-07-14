@@ -85,7 +85,6 @@
     
     sudo easy_install Cython 
     sudo easy_install pil
-    sudo apt-get install libatlas-base-dev # 科学计算库
     sudo apt-get install gfortran # fortran编译器
     sudo apt-get install libblas-dev liblapack-dev libatlas-base-dev
     export BLAS=/usr/lib/libblas/libblas.so 
