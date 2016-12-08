@@ -80,12 +80,10 @@
 **Ubuntu下numpy scipy matplotlib的安装：**  
 
     sudo apt-get update
-    sudo apt-get install git g++
+    sudo apt-get install git g++ gfortran
     sudo apt-get install python-dev python-setuptools
-    
-    sudo easy_install Cython 
+     
     sudo easy_install pil
-    sudo apt-get install gfortran # fortran编译器
     sudo apt-get install libblas-dev liblapack-dev libatlas-base-dev
     export BLAS=/usr/lib/libblas/libblas.so 
     export LAPACK=/usr/lib/lapack/liblapack.so 
