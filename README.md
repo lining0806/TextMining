@@ -77,50 +77,27 @@
 
 ## 关于环境搭建
 
-**Ubuntu下numpy scipy matplotlib的安装：**  
+**Ubuntu下numpy scipy matplotlib的安装**  
 
     sudo apt-get update
     sudo apt-get install git g++ gfortran
-    sudo apt-get install python-dev python-setuptools
-     
-    sudo easy_install pil
+    sudo apt-get install python-dev python-setuptools python-pip
+	
     sudo apt-get install libblas-dev liblapack-dev libatlas-base-dev
     export BLAS=/usr/lib/libblas/libblas.so 
     export LAPACK=/usr/lib/lapack/liblapack.so 
     export ATLAS=/usr/lib/atlas-base/libatlas.so
-
+	
 	sudo apt-get install python-numpy
 	sudo apt-get install python-scipy
 	sudo apt-get install python-matplotlib
 	或
-	sudo easy_install numpy
-	sudo easy_install scipy
-	sudo easy_install matplotlib	
+	sudo pip numpy
+	sudo pip scipy
+	sudo pip matplotlib	
     
-    sudo easy_install jieba
-    sudo easy_install scikit-learn
-    sudo easy_install simplejson
-    sudo easy_install pymongo
+    sudo pip jieba
+    sudo pip scikit-learn
+    sudo pip simplejson
+    sudo pip pymongo
 
-
-**CentOS下pil numpy scipy matplotlib的安装：**  
-
-    sudo yum install gcc-gfortran 
-    sudo yum install blas-devel
-    sudo yum install lapack-devel
-
-    进入numpy解压目录
-    sudo python setup.py build
-    sudo python setup.py install
-    进入scipy解压目录
-    sudo python setup.py build
-    sudo python setup.py install
-    进入matplotlib目录
-    sudo yum install libpng-devel
-    sudo python setup.py build
-    sudo python setup.py install
-    
-    sudo easy_install jieba
-    sudo easy_install scikit-learn
-    sudo easy_install simplejson
-    sudo easy_install pymongo
