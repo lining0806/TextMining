@@ -159,7 +159,7 @@ def Main():
                 all_words_tf_dict, all_words_idf_dict, train_datas, test_speedup)
     id_dict = MakeTextMining(*all_para)
     # MakeTextMining_ClassifyTest(*all_para) # 测试不同分类器性能
-    # MakeTextMining_Calendar(*all_para)
+    # MakeTextMining_Calendar(*all_para) # 日历
 
     ## --------------------------------------------------------------------------------
     # all_para = (smtp_server, from_addr, passwd, to_addr, sendmail_flag, id_dict)
